@@ -1,0 +1,15 @@
+CREATE DATABASE IF NOT EXISTS quanlybanhang CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE quanlybanhang;
+CREATE TABLE IF NOT EXISTS UserRoles(roleId INT AUTO_INCREMENT PRIMARY KEY,roleName VARCHAR(30) NOT NULL UNIQUE);
+CREATE TABLE IF NOT EXISTS Seller(sellerId INT AUTO_INCREMENT PRIMARY KEY,sellerName VARCHAR(150) NOT NULL,images VARCHAR(255),status BOOLEAN DEFAULT TRUE);
+CREATE TABLE IF NOT EXISTS Users(userId INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(50) NOT NULL UNIQUE,email VARCHAR(150) NOT NULL UNIQUE,fullname VARCHAR(150),password VARCHAR(255) NOT NULL,images VARCHAR(255),phone VARCHAR(30),status BOOLEAN DEFAULT FALSE,code VARCHAR(10),roleId INT,sellerId INT,FOREIGN KEY(roleId) REFERENCES UserRoles(roleId),FOREIGN KEY(sellerId) REFERENCES Seller(sellerId));
+CREATE TABLE IF NOT EXISTS Category(categoryId INT AUTO_INCREMENT PRIMARY KEY,categoryName VARCHAR(150) NOT NULL,images VARCHAR(255),status BOOLEAN DEFAULT TRUE);
+CREATE TABLE IF NOT EXISTS Product(productId INT AUTO_INCREMENT PRIMARY KEY,productName VARCHAR(200) NOT NULL,productCode VARCHAR(80) NOT NULL UNIQUE,categoryId INT NOT NULL,description TEXT,price DECIMAL(18,2) NOT NULL,amount INT NOT NULL,stock INT NOT NULL,images VARCHAR(255),wishlist BOOLEAN DEFAULT FALSE,status BOOLEAN DEFAULT TRUE,createDate DATETIME DEFAULT CURRENT_TIMESTAMP,sellerId INT NOT NULL,FOREIGN KEY(categoryId) REFERENCES Category(categoryId),FOREIGN KEY(sellerId) REFERENCES Seller(sellerId));
+CREATE TABLE IF NOT EXISTS Cart(cartId INT AUTO_INCREMENT PRIMARY KEY,userId INT NOT NULL,createdDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,buyDate DATETIME,status BOOLEAN DEFAULT FALSE,FOREIGN KEY(userId) REFERENCES Users(userId));
+ALTER TABLE Cart ADD COLUMN IF NOT EXISTS createdDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+CREATE TABLE IF NOT EXISTS CartItem(cartItemId INT AUTO_INCREMENT PRIMARY KEY,quantity INT NOT NULL,unitPrice DECIMAL(18,2) NOT NULL,productId INT NOT NULL,cartId INT NOT NULL,FOREIGN KEY(productId) REFERENCES Product(productId),FOREIGN KEY(cartId) REFERENCES Cart(cartId));
+INSERT IGNORE INTO UserRoles(roleId,roleName) VALUES(1,'ADMIN'),(2,'USER'),(3,'SELLER');
+INSERT IGNORE INTO Seller(sellerId,sellerName,status) VALUES(1,'Cửa hàng Nguyễn Dương',1),(2,'Cửa hàng Công Nghệ',1);
+INSERT IGNORE INTO Users(username,email,fullname,password,status,roleId,sellerId) VALUES('admin','admin@example.com','Administrator','123456',1,1,NULL),('user01','user01@example.com','Người dùng 01','123456',1,2,NULL),('seller01','seller01@example.com','Seller 01','123456',1,3,1);
+INSERT IGNORE INTO Category(categoryId,categoryName,status) VALUES(1,'Điện thoại',1),(2,'Laptop',1),(3,'Phụ kiện',1);
+INSERT IGNORE INTO Product(productName,productCode,categoryId,description,price,amount,stock,status,sellerId) VALUES('iPhone 15','IP15',1,'Điện thoại Apple',20000000,10,10,1,1),('Dell Inspiron 15','DELL15',2,'Laptop Dell',18000000,5,5,1,1),('Chuột Logitech','LOGI01',3,'Chuột không dây',500000,20,20,1,2);
