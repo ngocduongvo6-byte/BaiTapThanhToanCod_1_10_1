@@ -10,6 +10,8 @@
 		<class>gk2026.com.model.Product_24110188</class>
 		<class>gk2026.com.model.Cart_24110188</class>
 		<class>gk2026.com.model.CartItem_24110188</class>
+		<class>gk2026.com.model.Order_24110188</class>
+		<class>gk2026.com.model.OrderItem_24110188</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver"
 				value="com.mysql.cj.jdbc.Driver" />

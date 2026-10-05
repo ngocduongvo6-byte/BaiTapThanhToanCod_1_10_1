@@ -69,7 +69,7 @@ public class CartDAOImpl_24110188
     }
 
     @Override
-    public void checkout(Integer cartId) {
+    public Order_24110188 checkout(Integer cartId) {
 
         EntityManager em =
                 JPAConfig_24110188.entityManager();
@@ -113,6 +113,43 @@ public class CartDAOImpl_24110188
                 throw new IllegalArgumentException(
                         "Giỏ hàng đang trống."
                 );
+            }
+
+            Cart_24110188 lockedCart = cart;
+            Users_24110188 user = lockedCart.getUser();
+            if (user == null) {
+                throw new IllegalArgumentException("Giỏ hàng không có người dùng.");
+            }
+
+            Order_24110188 order = new Order_24110188();
+            order.setUser(user);
+            order.setOrderDate(LocalDateTime.now());
+            order.setStatus("NEW");
+            order.setPaymentMethod("COD");
+            java.math.BigDecimal total = java.math.BigDecimal.ZERO;
+            java.util.List<OrderItem_24110188> orderItems = new java.util.ArrayList<>();
+
+            for (CartItem_24110188 item : items) {
+                java.math.BigDecimal unitPrice = item.getUnitPrice();
+                if (unitPrice == null) {
+                    unitPrice = item.getProduct().getPrice();
+                }
+                java.math.BigDecimal subtotal = unitPrice.multiply(
+                        java.math.BigDecimal.valueOf(item.getQuantity()));
+                total = total.add(subtotal);
+
+                OrderItem_24110188 orderItem = new OrderItem_24110188();
+                orderItem.setOrder(order);
+                orderItem.setProduct(item.getProduct());
+                orderItem.setQuantity(item.getQuantity());
+                orderItem.setUnitPrice(unitPrice);
+                orderItem.setSubtotal(subtotal);
+                orderItems.add(orderItem);
+            }
+            order.setTotalAmount(total);
+            em.persist(order);
+            for (OrderItem_24110188 orderItem : orderItems) {
+                em.persist(orderItem);
             }
 
             for (CartItem_24110188 item : items) {
@@ -164,6 +201,7 @@ public class CartDAOImpl_24110188
             em.merge(cart);
 
             tx.commit();
+            return order;
 
         } catch (RuntimeException e) {
 

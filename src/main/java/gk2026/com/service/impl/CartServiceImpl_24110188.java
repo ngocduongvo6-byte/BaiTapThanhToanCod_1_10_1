@@ -22,6 +22,9 @@ public class CartServiceImpl_24110188
     private final UserService_24110188 userService =
             new UserServiceImpl_24110188();
 
+    private final OrderService_24110188 orderService =
+            new OrderServiceImpl_24110188();
+
     @Override
     public Cart_24110188 find(Integer id) {
         return cartDAO.find(id);
@@ -264,9 +267,7 @@ public class CartServiceImpl_24110188
             );
         }
 
-        cartDAO.checkout(
-                cart.getCartId()
-        );
+        orderService.createOrderFromCart(userId);
     }
 
     private boolean isExpired(Cart_24110188 cart) {

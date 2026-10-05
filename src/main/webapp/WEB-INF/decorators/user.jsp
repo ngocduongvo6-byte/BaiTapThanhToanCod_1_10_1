@@ -18,6 +18,9 @@
                 <a class="nav-link" href="${pageContext.request.contextPath}/home">Trang chủ</a>
                 <a class="nav-link" href="${pageContext.request.contextPath}/products">Sản phẩm</a>
                 <a class="nav-link" href="${pageContext.request.contextPath}/cart">Giỏ hàng</a>
+                <c:if test="${not empty sessionScope.currentUser and sessionScope.currentUser.role.roleName == 'USER'}">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/orders">Lịch sử đặt hàng</a>
+                </c:if>
                 <c:choose>
                     <c:when test="${not empty sessionScope.currentUser}">
                         <a class="nav-link" href="${pageContext.request.contextPath}/logout">Đăng xuất</a>
